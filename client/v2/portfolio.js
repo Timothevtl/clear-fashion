@@ -21,6 +21,7 @@ Search for available brands list
 let currentProducts = [];
 let currentPagination = {};
 
+
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');

@@ -2,8 +2,6 @@
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#invoking_strict_mode
 'use strict';
 
-console.log('🚀 This is it.');
-
 const MY_FAVORITE_BRANDS = [
   {
     'name': 'Faguo',
@@ -19,8 +17,7 @@ const MY_FAVORITE_BRANDS = [
   }
 ];
 
-console.table(MY_FAVORITE_BRANDS);
-console.log(MY_FAVORITE_BRANDS[0]);
+
 
 /**
  * 🌱
@@ -35,6 +32,9 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // I can find on these e-shops
 // 2. Log the variable
 
+const CHEAPEST_TSHIRT = 'https://www.faguo-store.com/fr/vetements/7606-arcy-t-shirt-en-coton-recycle-kaki.html';
+console.log(CHEAPEST_TSHIRT);
+
 /**
  * 👕
  * Easy 😁?
@@ -47,6 +47,14 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // 🎯 TODO 2: Number of products
 // 1. Create a variable and assign it the number of products
 // 2. Log the variable
+
+var nbProducts = 0;
+
+for(var i = 0; i < marketplace.length; ++i){
+   nbProducts++;
+ }
+
+console.log(nbProducts);
 
 // 🎯 TODO 3: Brands name
 // 1. Create a variable and assign it the list of brands name only
