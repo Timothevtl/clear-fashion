@@ -143,6 +143,11 @@ console.log(somme/marketplace.length);
 // 2. Log the variable
 // 3. Log the number of products by brands
 
+
+const brands = []
+
+
+
 // 🎯 TODO 9: Sort by price for each brand
 // 1. For each brand, sort the products by price, from highest to lowest
 // 2. Log the sort
@@ -354,13 +359,39 @@ const COTELE_PARIS = [
 // // 1. Log if we have new products only (true or false)
 // // A new product is a product `released` less than 2 weeks.
 
+function newrelease(products) {
+  for(var i = 0; i < COTELE_PARIS.length; ++i){
+    const dateA = new Date(products[i].released);
+    const dateB = new Date();
+    const dureeEnJours = 14; //14 jours soit 2 semaines.
+    if((dateB-dateA)<(dureeEnJours*1000*3600*24)){
+      console.log(products[i])
+    }
+  }
+}
+console.log(newrelease(COTELE_PARIS))
+
+
 // 🎯 TODO 2: Reasonable price
 // // 1. Log if coteleparis is a reasonable price shop (true or false)
 // // A reasonable price if all the products are less than 100€
 
+function reasonablePrice(){
+  for(var i = 0; i < COTELE_PARIS.length; ++i){
+    if(COTELE_PARIS[i].price > 100){
+      return false;
+    }
+  }
+  return true;
+}
+console.log(reasonablePrice(COTELE_PARIS))
+
+
 // 🎯 TODO 3: Find a specific product
 // 1. Find the product with the uuid `2b9a47e3-ed73-52f6-8b91-379e9c8e526c`
 // 2. Log the product
+
+
 
 // 🎯 TODO 4: Delete a specific product
 // 1. Delete the product with the uuid `2b9a47e3-ed73-52f6-8b91-379e9c8e526c`
