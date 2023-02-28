@@ -25,8 +25,10 @@ let currentPagination = {};
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
+const selectBrand = document.querySelector('#brand-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
+const spanNbBrands = document.querySelector('#nbBrands');
 
 /**
  * Set global value
@@ -88,6 +90,7 @@ const renderProducts = products => {
   sectionProducts.appendChild(fragment);
 };
 
+
 /**
  * Render page selector
  * @param  {Object} pagination
@@ -99,6 +102,11 @@ const renderPagination = pagination => {
     (value, index) => `<option value="${index + 1}">${index + 1}</option>`
   ).join('');
 
+  const brands = ["dedicated", "Adidas", "Puma", "adresse", "Under Armour"];
+  const options2 = brands.map((brand, index) => `<option value="${index}">${brand}</option>`).join("");
+
+
+  selectBrand.innerHTML = options2;
   selectPage.innerHTML = options;
   selectPage.selectedIndex = currentPage - 1;
 };
@@ -133,9 +141,32 @@ selectShow.addEventListener('change', async (event) => {
   render(currentProducts, currentPagination);
 });
 
+selectPage.addEventListener('change', async (event) => {
+  const products = await fetchProducts(parseInt(event.target.value), undefined);
+
+  setCurrentProducts(products);
+  render(currentProducts, currentPagination);
+});
+
+selectBrand.addEventListener('change', async (event) => {
+  const products = await fetchProducts();
+  console.log(products)
+
+  var e = document.getElementById("brand-select");
+  var text = e.options[e.selectedIndex].text;
+
+  const filtprods = products.result.filter(item => item.brand === text);
+
+  setCurrentProducts(filtprods);
+  render(currentProducts,currentPagination)
+});
+
+
 document.addEventListener('DOMContentLoaded', async () => {
   const products = await fetchProducts();
 
   setCurrentProducts(products);
   render(currentProducts, currentPagination);
 });
+
+
