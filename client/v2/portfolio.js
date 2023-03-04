@@ -18,6 +18,7 @@ Search for available brands list
 */
 
 // current products on the page
+let allProducts = [];
 let currentProducts = [];
 let currentPagination = {};
 
@@ -29,6 +30,10 @@ const selectBrand = document.querySelector('#brand-filter');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 const selectSort = document.querySelector('#sort-select');
+const spanCurrentProducts = document.querySelector('#CurProducts');
+const select50 = document.querySelector('#price-50');
+const selectRecent = document.querySelector('#recent');
+
 
 /**
  * Set global value
@@ -36,7 +41,8 @@ const selectSort = document.querySelector('#sort-select');
  * @param {Object} meta - pagination meta info
  */
 const setCurrentProducts = ({result, meta}) => {
-  currentProducts = result;
+  allProducts = result;
+  currentProducts = [...allProducts];
   currentPagination = meta;
 };
 
@@ -113,13 +119,17 @@ const renderPagination = pagination => {
 const renderIndicators = pagination => {
   const {count} = pagination;
 
+  spanCurrentProducts.innerHTML = currentProducts.length
   spanNbProducts.innerHTML = count;
+
+
   const brands = [...new Set(currentProducts.map(product => product.brand))];
   const options = brands
     .map(brand => `<option value="${brand}">${brand}</option>`)
     .join('');
 
   selectBrand.innerHTML = `<option value="">All brands</option>${options}`;
+  selectBrand.value = "";
 };
 
 const render = (products, pagination) => {
@@ -128,9 +138,25 @@ const render = (products, pagination) => {
   renderIndicators(pagination);
 };
 
-const filterProductsByBrand = brand => {
-  const filteredProducts = currentProducts.filter(product => product.brand === brand);
-  render(filteredProducts, {currentPage: 1, count: filteredProducts.length, pageCount: 1});
+const filterByBrand = brand => {
+  currentProducts = allProducts.filter(product => product.brand === brand);
+  render(currentProducts, currentPagination);
+};
+
+const filterByRecent = () => {
+  currentProducts = allProducts.filter(product => {
+    const releaseDate = new Date(product.released);
+    const today = new Date();
+    const diffTime = Math.abs(today - releaseDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 14;
+  });
+  render(currentProducts, currentPagination);
+};
+
+const filterReas = brand => {
+  const priceFilter = allProducts.filter(product => product.price <= 50);
+  render(priceFilter, {currentPage: 1, count: priceFilter.length, pageCount: 1});
 };
 
 const sortProducts = sortOption => {
@@ -190,12 +216,22 @@ selectPage.addEventListener('change', async (event) => {
 
 selectBrand.addEventListener('change', async (event) => {
   const selectedBrand = selectBrand.value;
-  filterProductsByBrand(selectedBrand);
+  filterByBrand(selectedBrand);
 });
-
+  
 selectSort.addEventListener('change', async (event) => {
   const selectedSort = selectSort.value;
   sortProducts(selectedSort);
+});
+
+selectRecent.addEventListener('change', () => {
+  const selectedFilter = selectFilter.value;
+  filterByRecent(selectedFilter);
+});
+
+select50.addEventListener('change', () => {
+  const selectedFilter = selectFilter.value;
+  filterReas(selectedFilter);
 });
 
 document.addEventListener('DOMContentLoaded', async () => {

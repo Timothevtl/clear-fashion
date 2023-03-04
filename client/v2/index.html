@@ -20,8 +20,13 @@
         <select name="page" id="page-select"> </select>
       </div>
       <div id="filters">
-        <span>By reasonable price</span>
-        <span>By recently released</span>
+        <div id="rizz">
+          <label for="rizzPrice">Filters :</label>
+          <select name="rizz" id="rizzPrice"> 
+            <option value="recent">recent product</option>
+            <option value="price-50">reasonable price</option>
+          </select>
+        </div>
         <div id="brand">
           <label for="brand-filter">By brands:</label>
           <select name="brand" id="brand-filter"> </select>
@@ -40,8 +45,12 @@
     <section id="indicators">
       <h2>Indicators</h2>
       <div>
-        <span>Number of products</span>
+        <span>Total number of products</span>
         <span id="nbProducts">0</span>
+      </div>
+      <div>
+        <span>Current number of products on the page</span>
+        <span id="CurProducts">0</span>
       </div>
       <div>
         <span>Number of brands</span>
@@ -49,7 +58,7 @@
       </div>
       <div>
         <span>Number of new products</span>
-        <span>0</span>
+        <span id="newProducts">0</span>
       </div>
       <div>
         <span>p50 price value</span>
