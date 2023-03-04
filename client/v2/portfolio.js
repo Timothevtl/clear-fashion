@@ -25,10 +25,10 @@ let currentPagination = {};
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
-const selectBrand = document.querySelector('#brand-select');
+const selectBrand = document.querySelector('#brand-filter');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
-const spanNbBrands = document.querySelector('#nbBrands');
+const selectSort = document.querySelector('#sort-select');
 
 /**
  * Set global value
@@ -44,6 +44,7 @@ const setCurrentProducts = ({result, meta}) => {
  * Fetch products from api
  * @param  {Number}  [page=1] - current page to fetch
  * @param  {Number}  [size=12] - size of the page
+ * @param  {String}  [brand=''] - brand name to filter by
  * @return {Object}
  */
 const fetchProducts = async (page = 1, size = 12) => {
@@ -101,12 +102,6 @@ const renderPagination = pagination => {
     {'length': pageCount},
     (value, index) => `<option value="${index + 1}">${index + 1}</option>`
   ).join('');
-
-  const brands = ["dedicated", "Adidas", "Puma", "adresse", "Under Armour"];
-  const options2 = brands.map((brand, index) => `<option value="${index}">${brand}</option>`).join("");
-
-
-  selectBrand.innerHTML = options2;
   selectPage.innerHTML = options;
   selectPage.selectedIndex = currentPage - 1;
 };
@@ -119,6 +114,12 @@ const renderIndicators = pagination => {
   const {count} = pagination;
 
   spanNbProducts.innerHTML = count;
+  const brands = [...new Set(currentProducts.map(product => product.brand))];
+  const options = brands
+    .map(brand => `<option value="${brand}">${brand}</option>`)
+    .join('');
+
+  selectBrand.innerHTML = `<option value="">All brands</option>${options}`;
 };
 
 const render = (products, pagination) => {
@@ -126,6 +127,45 @@ const render = (products, pagination) => {
   renderPagination(pagination);
   renderIndicators(pagination);
 };
+
+const filterProductsByBrand = brand => {
+  const filteredProducts = currentProducts.filter(product => product.brand === brand);
+  render(filteredProducts, {currentPage: 1, count: filteredProducts.length, pageCount: 1});
+};
+
+const sortProducts = sortOption => {
+  let sortedProducts = [...currentProducts];
+  switch(sortOption) {
+    case 'price-asc':
+      sortedProducts.sort((a, b) => a.price - b.price);
+      break;
+    case 'price-desc':
+      sortedProducts.sort((a, b) => b.price - a.price);
+      break;
+    case 'date-asc':
+      sortedProducts = sortedProducts.filter(product => {
+        const releaseDate = new Date(product.released);
+        const today = new Date();
+        const diffTime = Math.abs(today - releaseDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays <= 14;
+      });
+      break;
+    case 'date-desc':
+      sortedProducts = sortedProducts.filter(product => {
+        const releaseDate = new Date(product.released);
+        const today = new Date();
+        const diffTime = Math.abs(today - releaseDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays > 14;
+      });
+      break;
+    default:
+      break;
+  }
+  render(sortedProducts, {currentPage: 1, count: sortedProducts.length, pageCount: 1});
+};
+
 
 /**
  * Declaration of all Listeners
@@ -149,18 +189,14 @@ selectPage.addEventListener('change', async (event) => {
 });
 
 selectBrand.addEventListener('change', async (event) => {
-  const products = await fetchProducts();
-  console.log(products)
-
-  var e = document.getElementById("brand-select");
-  var text = e.options[e.selectedIndex].text;
-
-  const filtprods = products.result.filter(item => item.brand === text);
-
-  setCurrentProducts(filtprods);
-  render(currentProducts,currentPagination)
+  const selectedBrand = selectBrand.value;
+  filterProductsByBrand(selectedBrand);
 });
 
+selectSort.addEventListener('change', async (event) => {
+  const selectedSort = selectSort.value;
+  sortProducts(selectedSort);
+});
 
 document.addEventListener('DOMContentLoaded', async () => {
   const products = await fetchProducts();
@@ -168,5 +204,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setCurrentProducts(products);
   render(currentProducts, currentPagination);
 });
+
+
 
 
