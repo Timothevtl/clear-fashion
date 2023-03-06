@@ -21,6 +21,7 @@ Search for available brands list
 let allProducts = [];
 let currentProducts = [];
 let currentPagination = {};
+let favproducts = [];
 
 
 // instantiate the selectors
@@ -95,7 +96,7 @@ const renderProducts = products => {
         <span>${product.brand}</span>
         <a href="${product.link}" target="_blank">${product.name}</a>
         <span>${product.price}</span>
-        <button class="material-symbols-outlined">favorite</button>
+        <button class="material-symbols-outlined" onclick="fav('${product.uuid}')">favorite</button>
       </div>
     `;
     })
@@ -128,7 +129,6 @@ const renderPagination = pagination => {
  */
 const renderIndicators = pagination => {
   const {count} = pagination;
-  
   //counting new products
   const today = new Date();
   const twoWeeksAgo = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000);
@@ -247,8 +247,18 @@ const quickselect = (arr, k) => {
   }
 };
 
+function fav(products) {
+  for(var i = 0; i < currentProducts.length; ++i){
+    if((currentProducts[i].uuid).toString()===products && favproducts.includes(currentProducts[i])=== false){
+      favproducts.push(currentProducts[i]);
+    }
+  }
+  return favproducts;
+}
 
-
+function displayfav(){
+  render(favproducts,currentPagination);
+}
 
 
 /**
@@ -282,8 +292,6 @@ selectSort.addEventListener('change', async (event) => {
   const selectedSort = selectSort.value;
   sortProducts(selectedSort);
 });
-
-
 
 
 document.addEventListener('DOMContentLoaded', async () => {
