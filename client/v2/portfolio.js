@@ -30,9 +30,18 @@ const selectBrand = document.querySelector('#brand-filter');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 const selectSort = document.querySelector('#sort-select');
+
 const spanCurrentProducts = document.querySelector('#CurProducts');
+const spanNewProducts = document.querySelector('#newProducts');
+const spanP50Price = document.querySelector('#span50');
+const spanP90Price = document.querySelector('#span90');
+const spanP95Price = document.querySelector('#span95');
+const spanDate = document.querySelector('#lastRelease');
+
+
 const select50 = document.querySelector('#price-50');
 const selectRecent = document.querySelector('#recent');
+
 
 
 /**
@@ -74,7 +83,7 @@ const fetchProducts = async (page = 1, size = 12) => {
 
 /**
  * Render list of products
- * @param  {Array} products
+ * @param  {Array} products 
  */
 const renderProducts = products => {
   const fragment = document.createDocumentFragment();
@@ -84,7 +93,7 @@ const renderProducts = products => {
       return `
       <div class="product" id=${product.uuid}>
         <span>${product.brand}</span>
-        <a href="${product.link}">${product.name}</a>
+        <a href="${product.link}" target="_blank">${product.name}</a>
         <span>${product.price}</span>
       </div>
     `;
@@ -118,10 +127,25 @@ const renderPagination = pagination => {
  */
 const renderIndicators = pagination => {
   const {count} = pagination;
+  
+  //counting new products
+  const today = new Date();
+  const twoWeeksAgo = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000);
+  const newProducts = allProducts.filter(product => new Date(product.released) >= twoWeeksAgo);
 
-  spanCurrentProducts.innerHTML = currentProducts.length
+  const { p50, p90, p95 } = calculatePricePercentiles();
+  const releaseDates = currentProducts.map(product => new Date(product.released));
+  const mostRecentReleaseDate = new Date(Math.max.apply(null, releaseDates));
+
+  spanP50Price.innerHTML = `${p50.toFixed(2)} €`;
+  spanP90Price.innerHTML = `${p90.toFixed(2)} €`;
+  spanP95Price.innerHTML = `${p95.toFixed(2)} €`;
+  spanCurrentProducts.innerHTML = currentProducts.length;
   spanNbProducts.innerHTML = count;
+  spanNewProducts.innerHTML = newProducts.length;
 
+
+  spanDate.innerHTML = mostRecentReleaseDate.toLocaleDateString();
 
   const brands = [...new Set(currentProducts.map(product => product.brand))];
   const options = brands
@@ -192,6 +216,39 @@ const sortProducts = sortOption => {
   render(sortedProducts, {currentPage: 1, count: sortedProducts.length, pageCount: 1});
 };
 
+const calculatePricePercentiles = () => {
+  const prices = currentProducts.map(product => product.price);
+  const p50 = percentile(prices, 50);
+  const p90 = percentile(prices, 90);
+  const p95 = percentile(prices, 95);
+  return { p50, p90, p95 };
+};
+
+const percentile = (arr, p) => {
+  if (arr.length === 0) return 0;
+  const k = Math.floor((arr.length - 1) * p / 100);
+  return quickselect(arr, k);
+};
+
+const quickselect = (arr, k) => {
+  if (arr.length === 0) return 0;
+  if (arr.length === 1) return arr[0];
+  const pivot = arr[Math.floor(Math.random() * arr.length)];
+  const lows = arr.filter(x => x < pivot);
+  const highs = arr.filter(x => x > pivot);
+  const pivots = arr.filter(x => x === pivot);
+  if (k < lows.length) {
+    return quickselect(lows, k);
+  } else if (k < lows.length + pivots.length) {
+    return pivots[0];
+  } else {
+    return quickselect(highs, k - lows.length - pivots.length);
+  }
+};
+
+
+
+
 
 /**
  * Declaration of all Listeners
@@ -218,21 +275,15 @@ selectBrand.addEventListener('change', async (event) => {
   const selectedBrand = selectBrand.value;
   filterByBrand(selectedBrand);
 });
+
   
 selectSort.addEventListener('change', async (event) => {
   const selectedSort = selectSort.value;
   sortProducts(selectedSort);
 });
 
-selectRecent.addEventListener('change', () => {
-  const selectedFilter = selectFilter.value;
-  filterByRecent(selectedFilter);
-});
 
-select50.addEventListener('change', () => {
-  const selectedFilter = selectFilter.value;
-  filterReas(selectedFilter);
-});
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   const products = await fetchProducts();
