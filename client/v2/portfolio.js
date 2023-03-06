@@ -95,6 +95,7 @@ const renderProducts = products => {
         <span>${product.brand}</span>
         <a href="${product.link}" target="_blank">${product.name}</a>
         <span>${product.price}</span>
+        <button class="material-symbols-outlined">favorite</button>
       </div>
     `;
     })
