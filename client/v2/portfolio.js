@@ -30,6 +30,7 @@ const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-filter');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
+const spanNbBrands = document.querySelector('#nbBrands');
 const selectSort = document.querySelector('#sort-select');
 
 const spanCurrentProducts = document.querySelector('#CurProducts');
@@ -96,7 +97,7 @@ const renderProducts = products => {
         <span>${product.brand}</span>
         <a href="${product.link}" target="_blank">${product.name}</a>
         <span>${product.price}</span>
-        <button class="material-symbols-outlined" onclick="fav('${product.uuid}')">favorite</button>
+        <button class="material-symbols-outlined" onclick="fav('${product.uuid}')" title="Add to favorites">favorite</button>
       </div>
     `;
     })
@@ -138,6 +139,10 @@ const renderIndicators = pagination => {
   const releaseDates = currentProducts.map(product => new Date(product.released));
   const mostRecentReleaseDate = new Date(Math.max.apply(null, releaseDates));
 
+  const brands = [...new Set(currentProducts.map(product => product.brand))];
+
+  
+  spanNbBrands.innerHTML = brands.length;
   spanP50Price.innerHTML = `${p50.toFixed(2)} €`;
   spanP90Price.innerHTML = `${p90.toFixed(2)} €`;
   spanP95Price.innerHTML = `${p95.toFixed(2)} €`;
@@ -148,7 +153,6 @@ const renderIndicators = pagination => {
 
   spanDate.innerHTML = mostRecentReleaseDate.toLocaleDateString();
 
-  const brands = [...new Set(currentProducts.map(product => product.brand))];
   const options = brands
     .map(brand => `<option value="${brand}">${brand}</option>`)
     .join('');
@@ -251,6 +255,11 @@ function fav(products) {
   for(var i = 0; i < currentProducts.length; ++i){
     if((currentProducts[i].uuid).toString()===products && favproducts.includes(currentProducts[i])=== false){
       favproducts.push(currentProducts[i]);
+      var popup = document.createElement("div");
+      popup.className = "popup";
+      popup.innerHTML = "Added to favorites";
+      document.body.appendChild(popup);
+      setTimeout(function() {document.body.removeChild(popup)}, 2000);
     }
   }
   return favproducts;
