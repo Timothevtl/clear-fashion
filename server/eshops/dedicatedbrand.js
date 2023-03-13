@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
+const fs =require('fs');
 
 /**
  * Parse webpage e-shop
@@ -38,8 +39,12 @@ module.exports.scrape = async url => {
 
     if (response.ok) {
       const body = await response.text();
+      const products = parse(body);
 
-      return parse(body);
+      // Write the products to a JSON file
+      fs.writeFileSync('productsdedicated.json', JSON.stringify(products, null, 2));
+
+      return products;
     }
 
     console.error(response);
