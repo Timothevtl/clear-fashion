@@ -29,7 +29,9 @@ const parse = data => {
           .text(),
         10
       );
-      return {name, color, price};
+      if(color != ''){
+        return {name, color, price};
+      }
     })
     .get();
 };
