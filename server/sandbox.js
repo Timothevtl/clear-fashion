@@ -2,13 +2,13 @@
 
 const dedicatedbrand = require('./eshops/dedicatedbrand');
 const montLimart = require('./eshops/Montlimart');
-//const circleSports = require('./eshops/CircleSports');
+const circleSports = require('./eshops/CircleSportswear');
 
-async function sandbox (eshop = 'https://www.montlimart.com/101-t-shirts') {
+async function sandbox (eshop = 'https://shop.circlesportswear.com/collections/t-shirts-homme') {
   try {
     console.log(`🕵️‍♀️  browsing ${eshop} eshop`);
 
-    const products = await montLimart.scrape(eshop);
+    const products = await circleSports.scrape(eshop);
 
     console.log(products);
     console.log('done');

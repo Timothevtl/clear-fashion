@@ -10,20 +10,21 @@ const fs =require('fs');
 const parse = data => {
   const $ = cheerio.load(data);
 
-  return $('.productList-container .productList')
+  return $('.product-grid-container .grid__item')
     .map((i, element) => {
       const name = $(element)
-        .find('.productList-title')
+        .find('.full-unstyled-link')
         .text()
         .trim()
-        .replace(/\s/g, ' ');
-      const price = parseInt(
-        $(element)
-          .find('.productList-price')
-          .text()
-      );
+        .replace(/ /g, '');
+        
+      const cutoffIndex = name.indexOf('\n');
+      const newName = name.substring(0, cutoffIndex);
+      
+      const price = parseInt($(element).find('.money').text().replace('€',''),10);
 
-      return {name, price};
+
+      return {newName, price};
     })
     .get();
 };
@@ -42,7 +43,7 @@ module.exports.scrape = async url => {
       const products = parse(body);
 
       // Write the products to a JSON file
-      fs.writeFileSync('products.json', JSON.stringify(products, null, 2));
+      fs.writeFileSync('productsCircleSportswear.json', JSON.stringify(products, null, 2));
 
       return products;
     }
