@@ -13,7 +13,7 @@ async function sandbox (eshop = 'https://www.montlimart.com/101-t-shirts') {
     console.log(products);
     console.log('done');
     process.exit(0);
-  } catch (e) {
+  } catch (e) { 
     console.error(e);
     process.exit(1);
   }

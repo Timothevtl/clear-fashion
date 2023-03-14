@@ -10,20 +10,26 @@ const fs =require('fs');
 const parse = data => {
   const $ = cheerio.load(data);
 
-  return $('.product-list .products-list__block')
+  return $('.products-list .products-list__block*')
     .map((i, element) => {
       const name = $(element)
-        .find('product-miniature__color')
+        .find('.text-reset')
+        .text()
+        .trim()
+        .replace(/\s/g, ' ');
+
+      const color = $(element)
+        .find('.product-miniature__color')
         .text()
         .trim()
         .replace(/\s/g, ' ');
       const price = parseInt(
         $(element)
-          .find('.price')
-          .text()
+          .find('.product-miniature__pricing')
+          .text(),
+        10
       );
-
-      return {name, price};
+      return {name, color, price};
     })
     .get();
 };
