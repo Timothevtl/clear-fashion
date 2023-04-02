@@ -1,10 +1,34 @@
 const {MongoClient} = require('mongodb');
-const MONGODB_URI = 'mongodb+srv://<timothevital>:<QesWA42nidBDXfEW>@<cluster-url>?retryWrites=true&writeConcern=majority';
+const MONGODB_URI = 'mongodb+srv://timothevital:QesWA42nidBDXfEW@cluster0.xhoahnh.mongodb.net/myFirstDatabase?retryWrites=true&writeConcern=majority';
 const MONGODB_DB_NAME = 'clearfashion';
-const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
-const db =  client.db(MONGODB_DB_NAME)
 
-const products = [
+
+async function connectToDatabase() {
+  const client = await MongoClient.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+  });
+
+  const db = client.db(MONGODB_DB_NAME);
+  console.log('Connected to MongoDB database:', MONGODB_DB_NAME);
+}
+
+connectToDatabase().catch((error) => console.error(error));
+
+async function insertProducts(db, products) {
+  const collection = db.collection('products');
+  const result = await collection.insertMany(products);
+  console.log(`${result.insertedCount} products inserted`);
+  console.log(result);
+}
+
+async function main() {
+  const client = await MongoClient.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+  });
+  const db = client.db(MONGODB_DB_NAME);
+  const products = [
     {
       "name": "T-shirt Stockholm Butterfly Oat White",
       "price": 39
@@ -166,8 +190,5 @@ const products = [
       "price": 39
     }
   ];
-
-const collection = db.collection('products');
-  const result = collection.insertMany(products);
-
-  console.log(result);
+  return insertProducts(db, products);
+}
